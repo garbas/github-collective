@@ -1,0 +1,11 @@
+*.pyc
+*.pyo
+*.swp
+*.swo
+
+bin/
+build/
+github_collective.egg-info/
+include/
+lib/
+share/
