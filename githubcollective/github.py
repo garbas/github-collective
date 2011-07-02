@@ -97,7 +97,7 @@ class Github(object):
         if permission is not None:
             data['permission'] = permission
         assert permission in ['pull', 'push', 'admin']
-        return self._patch_request('/teams/%s' % id, json.dumps(data)
+        return self._patch_request('/teams/%s' % id, json.dumps(data))
 
     def _gh_org_delete_team(self, id):
         return self._delete_request('/teams/%s' % id)
