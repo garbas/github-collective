@@ -6,6 +6,7 @@
 .cache*
 bin/
 build/
+dist/
 github_collective.egg-info/
 include/
 lib/
