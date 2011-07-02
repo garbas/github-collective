@@ -3,7 +3,7 @@
 *.swp
 *.swo
 
-.cache-collective.json
+.cache*
 bin/
 build/
 github_collective.egg-info/
