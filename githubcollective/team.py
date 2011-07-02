@@ -20,3 +20,14 @@ class Team(object):
 
     def __str__(self):
         return self.__repr__()
+
+    def dumps(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'permission': self.permission,
+            'members_count': self.members_count,
+            'repos_count': self.repos_count,
+            'members': [i for i in self.members],
+            'repos': [i for i in self.repos],
+            }

@@ -10,3 +10,8 @@ class Repo(object):
 
     def __str__(self):
         return self.__repr__()
+
+    def dumps(self):
+        return {
+            'name': self.name,
+            }
