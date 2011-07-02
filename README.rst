@@ -119,11 +119,19 @@ Credits
 Changelog
 =========
 
+0.1.1 - 2011-07-02
+------------------
+
+ - and we have first bugfix relese, after refractoring and merging
+   `enable-cache` branch.
+   [garbas]
+
+
 0.1 - 2011-07-02
 ----------------
 
  - initial release
-
+   [garbas]
 
 
 .. _`Github organization`: https://github.com/blog/674-introducing-organizations

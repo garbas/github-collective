@@ -132,11 +132,11 @@ class Sync(object):
 
     def fork_repo(self, config, fork_url, repo):
         config._repos[repo.name] = repo
-        return self._gh_org_fork_repo(fork_url)
+        return self.github._gh_org_fork_repo(fork_url)
 
     def add_team(self, config, team):
         config._teams[team.name] = Team(team.name, team.permission)
-        return self._gh_org_create_team(
+        return self.github._gh_org_create_team(
                 name=team.name,
                 permission=team.permission,
                 )
@@ -144,7 +144,7 @@ class Sync(object):
     def edit_team(self, config, team):
         config._teams[team.name].name = team.name
         config._teams[team.name].permission = team.permission
-        return self._gh_org_edit_team(
+        return self.github._gh_org_edit_team(
                 id=team.id,
                 name=team.name,
                 permission=team.permission,
@@ -152,24 +152,24 @@ class Sync(object):
 
     def remove_team(self, config, team):
         del config._teams[team.name]
-        return self._gh_org_delete_team(team.id)
+        return self.github._gh_org_delete_team(team.id)
 
     def add_team_member(self, config, team, member):
         team = config.get_team(team.name)
         team.members.update([member])
-        return self._gh_org_add_team_member(team.id, member)
+        return self.github._gh_org_add_team_member(team.id, member)
 
     def remove_team_member(self, config, team, member):
         team = config.get_team(team.name)
         team.members.remove(member)
-        return self._gh_org_remove_team_member(team.id, member)
+        return self.github._gh_org_remove_team_member(team.id, member)
 
     def add_team_repo(self, config, team, repo):
         team = config.get_team(team.name)
         team.repos.update([repo])
-        return self._gh_org_add_team_repo(team.id, repo)
+        return self.github._gh_org_add_team_repo(team.id, repo)
 
     def remove_team_repo(self, config, team, repo):
         team = config.get_team(team.name)
         team.repos.remove(repo)
-        return self._gh_org_remove_team_repo(team.id, repo)
+        return self.github._gh_org_remove_team_repo(team.id, repo)
