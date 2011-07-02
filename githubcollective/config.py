@@ -1,5 +1,7 @@
 
+import requests
 import ConfigParser
+import StringIO
 from githubcollective.team import Team
 from githubcollective.repo import Repo
 
@@ -15,8 +17,14 @@ class Config(object):
     _fork_urls = {}
 
     def __init__(self, filename):
+
         config = ConfigParser.SafeConfigParser()
-        config.read(filename)
+        if filename.startswith('http'):
+            response = requests.get(filename)
+            response.raise_for_status()
+            config.readfp(StringIO.StringIO(response.read()))
+        else:
+            config.read(filename)
 
         for section in config.sections():
             if section.startswith('repo:'):

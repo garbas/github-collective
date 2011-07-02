@@ -41,6 +41,7 @@ def run():
                 args.github_organization,
                 args.github_username,
                 args.github_password,
+                args.verbose,
                 args.pretend,
                 ),
             )

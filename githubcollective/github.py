@@ -23,8 +23,9 @@ class Github(object):
     _request_limit = 5000
     _request_remaining = 5000
 
-    def __init__(self, organization, username, password, pretend):
+    def __init__(self, organization, username, password, verbose, pretend):
         self.org = organization
+        self.verbose = verbose
         self.pretend = pretend
         self.headers = {
             'Authorization': 'Basic %s' % base64.encodestring(
@@ -35,7 +36,7 @@ class Github(object):
     # requests library helpers
 
     def _request(self, method, url, data=None):
-        kw = {'url': BASE_URL+url,
+        kw = {'url': BASE_URL+url+'?per_page=10000',
               'headers': self.headers}
         if data:
             kw['data'] = data
@@ -44,6 +45,14 @@ class Github(object):
         self._request_limit = response.headers['x-ratelimit-limit']
         self._request_remaining = response.headers['x-ratelimit-remaining']
         response.raise_for_status()
+        if self.verbose:
+            print '%s - %s/%s - %s - %s' % (
+                self._request_count,
+                self._request_remaining,
+                self._request_limit,
+                method.__name__.upper(),
+                kw['url'],
+                )
         return response
 
     def _get_request(self, url):
