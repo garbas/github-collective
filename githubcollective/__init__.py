@@ -29,16 +29,26 @@ class Mailer(object):
 
 def run():
     parser = argparse.ArgumentParser(
-        prog=Sync.__name__,
+        prog='github-collective',
+        description='This tool will let you automate tedious tasks of '
+                    'creating teams granting permission and creating '
+                    'repositories.',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         )
 
-    parser.add_argument('-c', '--config', type=select_config, required=True)
-    parser.add_argument('-M', '--mailer', type=lambda x: Mailer(x))
-    parser.add_argument('-C', '--cache', type=str)
-    parser.add_argument('-o', '--github-org', type=str, required=True)
-    parser.add_argument('-u', '--github-username', type=str, required=True)
-    parser.add_argument('-P', '--github-password', type=str, required=True)
+    parser.add_argument('-c', '--config', type=select_config, required=True,
+            help="path to configuration file (could also be remote location). "
+                 "eg. http://collective.github.com/permissions.cfg")
+    parser.add_argument('-M', '--mailer', type=lambda x: Mailer(x),
+            help="TODO")
+    parser.add_argument('-C', '--cache', type=str,
+            help="path to file where to cache results from github.")
+    parser.add_argument('-o', '--github-org', type=str, required=True,
+            help="github organisation.")
+    parser.add_argument('-u', '--github-username', type=str, required=True,
+            help="github account username.")
+    parser.add_argument('-P', '--github-password', type=str, required=True,
+            help="github account password.")
     parser.add_argument('-v', '--verbose', action='store_true')
     parser.add_argument('-p', '--pretend', action='store_true')
 

@@ -7,10 +7,7 @@ except:
 import base64
 import requests
 
-from githubcollective.team import Team
-from githubcollective.repo import Repo
 from githubcollective.config import BASE_URL
-from githubcollective.config import TEAM_PREFIX
 
 
 class Github(object):
@@ -36,6 +33,8 @@ class Github(object):
     # requests library helpers
 
     def _request(self, method, url, data=None):
+        if self.pretend:
+            return
         kw = {'url': BASE_URL+url+'?per_page=10000',
               'headers': self.headers}
         if data:

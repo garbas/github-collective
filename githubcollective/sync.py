@@ -3,10 +3,6 @@ from githubcollective.team import Team
 
 
 class Sync(object):
-    """
-    """
-
-    __name__ = 'githubcollective-sync'
 
     def __init__(self, github, mailer=None, verbose=False, pretend=False):
         self.github = github
@@ -127,27 +123,19 @@ class Sync(object):
 
     def add_repo(self, config, repo):
         config._repos[repo.name] = repo
-        if self.pretend:
-            return
         return self.github._gh_org_create_repo(repo.name)
 
     def remove_repo(self, config, repo):
         del config._repos[repo.name]
-        if self.pretend:
-            return
         if self.mailer:
             raise NotImplemented
 
     def fork_repo(self, config, fork_url, repo):
         config._repos[repo.name] = repo
-        if self.pretend:
-            return
         return self._gh_org_fork_repo(fork_url)
 
     def add_team(self, config, team):
         config._teams[team.name] = Team(team.name, team.permission)
-        if self.pretend:
-            return
         return self._gh_org_create_team(
                 name=team.name,
                 permission=team.permission,
@@ -156,8 +144,6 @@ class Sync(object):
     def edit_team(self, config, team):
         config._teams[team.name].name = team.name
         config._teams[team.name].permission = team.permission
-        if self.pretend:
-            return
         return self._gh_org_edit_team(
                 id=team.id,
                 name=team.name,
@@ -166,34 +152,24 @@ class Sync(object):
 
     def remove_team(self, config, team):
         del config._teams[team.name]
-        if self.pretend:
-            return
         return self._gh_org_delete_team(team.id)
 
     def add_team_member(self, config, team, member):
         team = config.get_team(team.name)
         team.members.update([member])
-        if self.pretend:
-            return
         return self._gh_org_add_team_member(team.id, member)
 
     def remove_team_member(self, config, team, member):
         team = config.get_team(team.name)
         team.members.remove(member)
-        if self.pretend:
-            return
         return self._gh_org_remove_team_member(team.id, member)
 
     def add_team_repo(self, config, team, repo):
         team = config.get_team(team.name)
         team.repos.update([repo])
-        if self.pretend:
-            return
         return self._gh_org_add_team_repo(team.id, repo)
 
     def remove_team_repo(self, config, team, repo):
         team = config.get_team(team.name)
         team.repos.remove(repo)
-        if self.pretend:
-            return
         return self._gh_org_remove_team_repo(team.id, repo)
