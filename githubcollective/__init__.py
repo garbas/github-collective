@@ -79,7 +79,8 @@ def run():
     sync_ok = sync.run(new, old)
 
     if sync_ok:
-        if args.cache and not args.pretend:
+        if args.cache and \
+           (not args.pretend or not os.path.exists(args.cache)):
             cache = open(args.cache, 'w+')
             old.dumps(cache)
             cache.close()
