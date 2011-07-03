@@ -66,7 +66,7 @@ class Config(object):
         json.dump({
             'teams': [self._teams[name].dumps() for name in self.teams],
             'repos': [self._repos[name].dumps() for name in self.repos],
-            }, f)
+            }, f, indent=4)
         f.close()
 
     def is_url(self, url):
@@ -139,13 +139,14 @@ class ConfigCFG(Config):
                 self._teams[name] = Team(name, permission,
                         members=members, repos=repos)
 
-            # add repos to teams (defined with repo: section
-            for section in config.sections():
-                if section.startswith('repo:'):
-                    repos = [section[len('repo:'):]]
-                    if config.has_option(section, 'team'):
-                        for team in config.get(section, 'team').split():
-                            self._teams[TEAM_PREFIX + team].repos.update(repos)
+        # add repos to teams (defined with repo: section
+        for section in config.sections():
+            if section.startswith('repo:'):
+                if config.has_option(section, 'teams'):
+                    for team in config.get(section, 'teams').split():
+                        self._teams[TEAM_PREFIX + team].repos.add(
+                                section[len('repo:'):],
+                                )
 
 class ConfigGithub(Config):
 
