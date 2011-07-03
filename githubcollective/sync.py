@@ -58,55 +58,55 @@ class Sync(object):
             print 'TEAMS'
         for team_name in new.teams - to_remove:
 
-            team = old.get_team(team_name)
-            if team is None:
+            old_team = old.get_team(team_name)
+            if old_team is None:
                 continue
             new_team = new.get_team(team_name)
-            new_team.id = team.id
+            new_team.id = old_team.id
 
             # UPDATE TEAM PERMISSION
-            if new_team.permission != team.permission:
+            if new_team.permission != old_team.permission:
                 self.edit_team(old, new_team)
                 if self.verbose:
                     print '    - %s - UPDATE PERMISSION: %s -> %s' % (
-                            team.name, team.permission, new_team.permission)
+                            old_team.name, old_team.permission, new_team.permission)
 
 
             # ADD MEMBERS
-            to_add = set(new_team.members) - set(team.members)
+            to_add = new_team.members - old_team.members
             if to_add:
                 if self.verbose:
-                    print '    - %s - ADDED MEMBERS:' % team.name
+                    print '    - %s - ADDED MEMBERS:' % team_name
                 for member in to_add:
-                    self.add_team_member(old, team, member)
+                    self.add_team_member(old, old_team, member)
                     print '        - %s' % member
 
 
             # REMOVE MEMBERS
-            to_remove = set(team.members) - set(new_team.members)
+            to_remove = old_team.members - new_team.members
             if to_remove:
                 if self.verbose:
-                    print '    - %s - REMOVED MEMBERS:' % team.name
+                    print '    - %s - REMOVED MEMBERS:' % team_name
                 for member in to_remove:
-                    self.remove_team_member(old, team, member)
+                    self.remove_team_member(old, old_team, member)
                     print '        - %s' % member
 
             # ADD REPOS 
-            to_add = new_team.repos - team.repos
+            to_add = new_team.repos - old_team.repos
             if to_add:
                 if self.verbose:
-                    print '    - %s - ADDED REPOS:' % team.name
+                    print '    - %s - ADDED REPOS:' % team_name
                 for repo in to_add:
-                    self.add_team_repo(old, team, repo)
+                    self.add_team_repo(old, old_team, repo)
                     print '        - %s' % repo
 
             # REMOVE REPOS
-            to_remove = team.repos - new_team.repos
+            to_remove = old_team.repos - new_team.repos
             if to_remove:
                 if self.verbose:
-                    print '    - %s - REMOVED REPOS:' % team.name
+                    print '    - %s - REMOVED REPOS:' % team_name
                 for repo in to_remove:
-                    self.remove_team_repo(old, team, repo)
+                    self.remove_team_repo(old, old_team, repo)
                     print '        - %s' % repo
 
         if self.verbose:
@@ -156,7 +156,7 @@ class Sync(object):
 
     def add_team_member(self, config, team, member):
         team = config.get_team(team.name)
-        team.members.update([member])
+        team.members.add(member)
         return self.github._gh_org_add_team_member(team.id, member)
 
     def remove_team_member(self, config, team, member):
@@ -166,7 +166,7 @@ class Sync(object):
 
     def add_team_repo(self, config, team, repo):
         team = config.get_team(team.name)
-        team.repos.update([repo])
+        team.repos.add(repo)
         return self.github._gh_org_add_team_repo(team.id, repo)
 
     def remove_team_repo(self, config, team, repo):
