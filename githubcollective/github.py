@@ -33,8 +33,6 @@ class Github(object):
     # requests library helpers
 
     def _request(self, method, url, data=None):
-        if self.pretend:
-            return
         kw = {'url': BASE_URL+url+'?per_page=10000',
               'headers': self.headers}
         if data:
@@ -58,15 +56,23 @@ class Github(object):
         return json.load(self._request(requests.get, url))
 
     def _delete_request(self, url):
+        if self.pretend:
+            return
         return self._request(requests.delete, url)
 
     def _post_request(self, url, data):
-        return json.load(self._request(requests.post, url, data))
+        if self.pretend:
+            return
+        return self._request(requests.post, url, data)
 
     def _put_request(self, url):
+        if self.pretend:
+            return
         return self._request(requests.put, url)
 
     def _patch_request(self, url, data):
+        if self.pretend:
+            return
         return self._request(requests.patch, url, data)
 
     #
