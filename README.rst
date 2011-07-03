@@ -113,18 +113,32 @@ Todo
 Credits
 =======
 
-:Author: `Rok Garbas`_
+:Author: `Rok Garbas`_ (garbas)
 
 
 Changelog
 =========
 
+0.1.2 - 2011-07-03
+------------------
+
+ - remane team to old_team to keep convention in sync.run method, using
+   add instead of update on sets
+   [`e48de49`_, garbas]
+ - pretend should work for all except get reuqest type
+   [`e098f9d`_, garbas]
+ - nicer dump of json in cache file, unindent section which searches for
+   repos defined in teams
+   [`b8cb123`_, garbas]
+ - we should write to cache file when there is no cache file avaliable
+   [`fd7f9ee`_, garbas]
+
 0.1.1 - 2011-07-02
 ------------------
 
  - and we have first bugfix relese, after refractoring and merging
-   `enable-cache` branch.
-   [garbas]
+   ``enable-cache`` branch.
+   [`a09d174`_, garbas]
 
 
 0.1 - 2011-07-02
@@ -139,3 +153,9 @@ Changelog
 .. _`argparse`: http://pypi.python.org/pypi/argparse
 .. _`requests`: http://python-requests.org
 .. _`Rok Garbas`: http://www.garbas.si
+
+.. _`e48de49`: https://github.com/garbas/github-collective/commit/e48de49
+.. _`e098f9d`: https://github.com/garbas/github-collective/commit/e098f9d
+.. _`b8cb123`: https://github.com/garbas/github-collective/commit/b8cb123
+.. _`fd7f9ee`: https://github.com/garbas/github-collective/commit/fd7f9ee
+.. _`a09d174`: https://github.com/garbas/github-collective/commit/a09d174
