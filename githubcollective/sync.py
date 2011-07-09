@@ -1,12 +1,16 @@
 
+try:
+    import simplejson as json
+except:
+    import json
+
 from githubcollective.team import Team
 
 
 class Sync(object):
 
-    def __init__(self, github, mailer=None, verbose=False, pretend=False):
+    def __init__(self, github, verbose=False, pretend=False):
         self.github = github
-        self.mailer = mailer
         self.verbose = verbose
         self.pretend = pretend
 
@@ -31,6 +35,10 @@ class Sync(object):
         if self.verbose:
             print 'REPOS TO BE REMOVED:'
         to_remove = old.repos - new.repos
+        if to_remove:
+            # empty cache and recheck if we really need to delete it
+            old._github['repos'] = {}
+            to_remove = old.repos - new.repos
         for repo in to_remove:
             self.remove_repo(old, old.get_repo(repo))
             if self.verbose:
@@ -55,7 +63,7 @@ class Sync(object):
                 print '    - %s' % team
 
         if self.verbose:
-            print 'TEAMS'
+            print 'UPDATING TEAMS:'
         for team_name in new.teams - to_remove:
 
             old_team = old.get_team(team_name)
@@ -110,7 +118,6 @@ class Sync(object):
                     print '        - %s' % repo
 
         if self.verbose:
-            print
             print 'REQUEST STATS:'
             print '    - request_count: %s' % self.github._request_count
             print '    - request_limit: %s' % self.github._request_limit
@@ -126,20 +133,27 @@ class Sync(object):
         return self.github._gh_org_create_repo(repo.name)
 
     def remove_repo(self, config, repo):
-        del config._repos[repo.name]
-        if self.mailer:
-            raise NotImplemented
+        pass
+        #del config._repos[repo.name]
+        # TODO: NotImplemented
 
     def fork_repo(self, config, fork_url, repo):
         config._repos[repo.name] = repo
         return self.github._gh_org_fork_repo(fork_url)
 
     def add_team(self, config, team):
-        config._teams[team.name] = Team(team.name, team.permission)
-        return self.github._gh_org_create_team(
+        config._teams[team.name] = Team(
                 name=team.name,
                 permission=team.permission,
                 )
+        response = self.github._gh_org_create_team(
+                name=team.name,
+                permission=team.permission,
+                )
+        if response:
+            team_dict = json.load(response)
+            config._teams[team.name].id = team_dict['id']
+        return response
 
     def edit_team(self, config, team):
         config._teams[team.name].name = team.name

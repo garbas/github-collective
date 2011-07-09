@@ -119,6 +119,12 @@ Credits
 Changelog
 =========
 
+0.1.3 - 2011-07-09
+------------------
+
+ - fix caching file bug, cache now working
+   [garbas]
+
 0.1.2 - 2011-07-03
 ------------------
 

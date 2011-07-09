@@ -9,23 +9,23 @@ from githubcollective.config import ConfigCFG
 from githubcollective.config import ConfigGithub
 
 
-def select_config(config):
+def config_type(config):
     if config.endswith('.cfg'):
-        return ConfigCFG(config)
+        return ConfigCFG, config
     elif config.endswith('.json'):
-        return Config(config)
+        return Config, config
     else:
         raise NotImplemented
 
-
-class Mailer(object):
-
-    def __init__(self, type_):
-        raise NotImplemented
-
-    def send(self, to, msg):
-        raise NotImplemented
-
+def cache_type(cache):
+    if os.path.exists(cache):
+        f = open(cache)
+        data = f.read()
+        if data:
+            f.seek(0)
+            return f
+        f.close()
+    return open(cache, 'w+')
 
 def run():
     parser = argparse.ArgumentParser(
@@ -36,13 +36,12 @@ def run():
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         )
 
-    parser.add_argument('-c', '--config', type=select_config, required=True,
+    parser.add_argument('-c', '--config', type=config_type, required=True,
             help="path to configuration file (could also be remote location). "
                  "eg. http://collective.github.com/permissions.cfg")
-    parser.add_argument('-M', '--mailer', type=lambda x: Mailer(x),
-            help="TODO")
-    parser.add_argument('-C', '--cache', type=str,
-            help="path to file where to cache results from github.")
+    parser.add_argument('-C', '--cache', type=cache_type,
+            help="path to file where to cache results from github.",
+            default=None)
     parser.add_argument('-o', '--github-org', type=str, required=True,
             help="github organisation.")
     parser.add_argument('-u', '--github-username', type=str, required=True,
@@ -55,34 +54,36 @@ def run():
     args = parser.parse_args()
 
     github = Github(
-                args.github_org,
-                args.github_username,
-                args.github_password,
-                args.verbose,
-                args.pretend,
-                )
-
-    new = args.config
-    old = None
-    if args.cache and \
-       os.path.exists(args.cache):
-        old = Config(args.cache)
-    if old is None or \
-       (not old.teams and not old.repos):
-        old = ConfigGithub(github)
-
-    sync = Sync(github,
-            mailer=args.mailer,
-            verbose=args.verbose,
-            pretend=args.pretend,
+            args.github_org,
+            args.github_username,
+            args.github_password,
+            args.verbose,
+            args.pretend,
             )
-    sync_ok = sync.run(new, old)
+
+    new = args.config[0](
+            args.config[1],
+            args.verbose,
+            args.pretend,
+            )
+
+    old = ConfigGithub(
+            github,
+            args.cache,
+            args.verbose,
+            args.pretend,
+            )
+
+    sync_ok = Sync(
+            github,
+            args.verbose,
+            args.pretend,
+            ).run(new, old)
 
     if sync_ok:
-        if args.cache and \
-           (not args.pretend or not os.path.exists(args.cache)):
-            cache = open(args.cache, 'w+')
-            old.dumps(cache)
-            cache.close()
+        if args.cache:
+            if not args.pretend:
+                old.dumps(args.cache)
+            args.cache.close()
         sys.exit()
     sys.exit(1)

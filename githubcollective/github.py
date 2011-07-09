@@ -41,7 +41,6 @@ class Github(object):
         self._request_count += 1
         self._request_limit = response.headers['x-ratelimit-limit']
         self._request_remaining = response.headers['x-ratelimit-remaining']
-        response.raise_for_status()
         if self.verbose:
             print '%s - %s/%s - %s - %s' % (
                 self._request_count,
@@ -50,6 +49,10 @@ class Github(object):
                 method.__name__.upper(),
                 kw['url'],
                 )
+        try:
+            response.raise_for_status()
+        except:
+            import ipdb; ipdb.set_trace()
         return response
 
     def _get_request(self, url):
@@ -97,7 +100,9 @@ class Github(object):
         return self._post_request('/repos/%s/forks' % fork_url, {'org': self.org})
 
     def _gh_org_create_repo(self, name):
-        return self._post_request('/orgs/%s/repos' % self.org, {'name': name})
+        return self._post_request('/orgs/%s/repos' % self.org, json.dumps({
+            'name': name,
+            }))
 
     def _gh_org_create_team(self, name, permission='pull'):
         assert permission in ['pull', 'push', 'admin']
