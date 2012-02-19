@@ -33,7 +33,7 @@ class Github(object):
     # requests library helpers
 
     def _request(self, method, url, data=None):
-        kw = {'url': BASE_URL+url+'?per_page=10000',
+        kw = {'url': BASE_URL + url + '?per_page=10000',
               'headers': self.headers}
         if data:
             kw['data'] = data
@@ -49,14 +49,11 @@ class Github(object):
                 method.__name__.upper(),
                 kw['url'],
                 )
-        try:
-            response.raise_for_status()
-        except:
-            import ipdb; ipdb.set_trace()
+        response.raise_for_status()
         return response
 
     def _get_request(self, url):
-        return json.load(self._request(requests.get, url))
+        return json.loads(self._request(requests.get, url).text)
 
     def _delete_request(self, url):
         if self.pretend:
@@ -97,7 +94,8 @@ class Github(object):
         return self._get_request('/orgs/%s/repos' % self.org)
 
     def _gh_org_fork_repo(self, fork_url):
-        return self._post_request('/repos/%s/forks' % fork_url, {'org': self.org})
+        return self._post_request('/repos/%s/forks' % fork_url,
+                {'org': self.org})
 
     def _gh_org_create_repo(self, name):
         return self._post_request('/orgs/%s/repos' % self.org, json.dumps({
@@ -128,8 +126,9 @@ class Github(object):
         return self._delete_request('/teams/%s/members/%s' % (id, member))
 
     def _gh_org_add_team_repo(self, id, repo):
-        return self._put_request('/teams/%s/repos/%s/%s' % (id, self.org, repo))
+        return self._put_request('/teams/%s/repos/%s/%s' %
+                (id, self.org, repo))
 
     def _gh_org_remove_team_repo(self, id, repo):
-        return self._delete_request('/teams/%s/repos/%s/%s' % (id, self.org, repo))
-
+        return self._delete_request('/teams/%s/repos/%s/%s' %
+                (id, self.org, repo))

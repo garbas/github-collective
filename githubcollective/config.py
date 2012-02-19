@@ -34,7 +34,7 @@ class Config(object):
              self.is_url(filename):
             response = requests.get(filename)
             response.raise_for_status()
-            data = response.read()
+            data = response.text
         elif type(filename) in [str, unicode] and \
              os.path.exists(filename):
             f = open(filename)
@@ -48,10 +48,7 @@ class Config(object):
 
     def parse(self, data):
         teams, repos = {}, {}
-        try:
-            data = json.loads(data)
-        except:
-            import ipdb; ipdb.set_trace()
+        data = json.loads(data)
 
         for team in data['teams']:
             team = Team(**team)
